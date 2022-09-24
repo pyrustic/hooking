@@ -1,0 +1,3 @@
+recursive-include hooking *
+global-exclude *.py[cod]
+include VERSION
