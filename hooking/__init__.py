@@ -32,6 +32,7 @@ class H:
 
     @property
     def frozen(self):
+        """Get the value of frozen state"""
         return self._frozen
 
     def bind(self, event, hook, spec=ENTER, accept_input=True):

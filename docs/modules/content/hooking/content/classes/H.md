@@ -25,7 +25,7 @@ No class attributes.
 |Property|Type|Description|Inherited from|
 |---|---|---|---|
 |events|getter|Get names of events||
-|frozen|getter|None||
+|frozen|getter|Get the value of frozen state||
 |hids|getter|Get HIDs (Hook IDs)||
 
 
