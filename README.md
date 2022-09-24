@@ -30,7 +30,7 @@ This project is part of the [Pyrustic Open Ecosystem](https://pyrustic.github.io
 - [Check a hook](#check-a-hook)
 - [Check an event](#check-an-event)
 - [Freeze and unfreeze a session](#freeze-and-unfreeze-a-session)
-- [Clear events and hooks](#check-events-and-hooks)
+- [Clear events and hooks](#clear-events-and-hooks)
 - [Miscellaneous](#miscellaneous)
 - [Installation](#installation)
 
