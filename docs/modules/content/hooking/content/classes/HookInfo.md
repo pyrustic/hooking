@@ -2,24 +2,24 @@ Back to [All Modules](https://github.com/pyrustic/hooking/blob/master/docs/modul
 
 # Module Overview
 
-**hooking.dto**
+**hooking**
  
-Data Transfer Object module
+Hooking module
 
-> **Classes:** &nbsp; [Context](https://github.com/pyrustic/hooking/blob/master/docs/modules/content/hooking.dto/content/classes/Context.md#class-context) &nbsp;&nbsp; [HookInfo](https://github.com/pyrustic/hooking/blob/master/docs/modules/content/hooking.dto/content/classes/HookInfo.md#class-hookinfo)
+> **Classes:** &nbsp; [ChainBreak](https://github.com/pyrustic/hooking/blob/master/docs/modules/content/hooking/content/classes/ChainBreak.md#class-chainbreak) &nbsp;&nbsp; [Context](https://github.com/pyrustic/hooking/blob/master/docs/modules/content/hooking/content/classes/Context.md#class-context) &nbsp;&nbsp; [Error](https://github.com/pyrustic/hooking/blob/master/docs/modules/content/hooking/content/classes/Error.md#class-error) &nbsp;&nbsp; [H](https://github.com/pyrustic/hooking/blob/master/docs/modules/content/hooking/content/classes/H.md#class-h) &nbsp;&nbsp; [HookInfo](https://github.com/pyrustic/hooking/blob/master/docs/modules/content/hooking/content/classes/HookInfo.md#class-hookinfo)
 >
 > **Functions:** &nbsp; None
 >
-> **Constants:** &nbsp; None
+> **Constants:** &nbsp; AFTER &nbsp;&nbsp; BEFORE
 
 # Class HookInfo
-HookInfo(hid, event, spec, accept_input)
+HookInfo(hid, hook, tag, spec)
 
 ## Base Classes
 tuple
 
 ## Class Attributes
-\_field\_defaults &nbsp;&nbsp; \_fields &nbsp;&nbsp; \_fields\_defaults &nbsp;&nbsp; \_make &nbsp;&nbsp; accept\_input &nbsp;&nbsp; event &nbsp;&nbsp; hid &nbsp;&nbsp; spec
+\_field\_defaults &nbsp;&nbsp; \_fields &nbsp;&nbsp; \_fields\_defaults &nbsp;&nbsp; \_make &nbsp;&nbsp; hid &nbsp;&nbsp; hook &nbsp;&nbsp; spec &nbsp;&nbsp; tag
 
 ## Class Properties
 

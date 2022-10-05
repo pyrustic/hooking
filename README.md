@@ -13,7 +13,7 @@
 
 <!-- Intro Text -->
 # Pyrustic Hooking
-<b> Event lifecycle oriented hooking </b>
+<b> Generic hooking mechanism for Python </b>
 
 
 This project is part of the [Pyrustic Open Ecosystem](https://pyrustic.github.io).
@@ -22,292 +22,225 @@ This project is part of the [Pyrustic Open Ecosystem](https://pyrustic.github.io
 
 ## Table of contents
 - [Overview](#overview)
-- [Bind hooks to an event](#bind-hooks-to-an-event)
-- [Unbind hooks from an event](#unbind-hooks-from-an-event)
-- [Enter an event](#enter-an-event)
-- [Leave an event](#leave-an-event)
-- [Break an event](#break-an-event)
-- [Check a hook](#check-a-hook)
-- [Check an event](#check-an-event)
-- [Freeze and unfreeze a session](#freeze-and-unfreeze-a-session)
-- [Clear events and hooks](#clear-events-and-hooks)
+- [Tagging mechanism](#tagging-mechanism)
+- [Bind hooks](#bind-hooks)
+- [Anatomy of a hook](#anatomy-of-a-hook)
+- [Chain break](#chain-break)
+- [Freeze tags](#freeze-tags)
+- [Exposed variables](#exposed-variables)
+- [Clear data](#clear-data)
 - [Miscellaneous](#miscellaneous)
 - [Installation](#installation)
 
 # Overview
-This library, written in **Python**, allows the programmer to perform event lifecycle oriented [hooking](https://en.wikipedia.org/wiki/Hooking). Typically, an [event](https://en.wikipedia.org/wiki/Event_(computing)) has a beginning and an end, therefore a lifecycle. A callback function called a `hook` can be bound to an arbitrary stage of an event's lifecycle.
+This library, written in **Python**, implements an intuitive and minimalist [hooking](https://en.wikipedia.org/wiki/Hooking) mechanism. It exposes a [decorator](https://peps.python.org/pep-0318/) to tag **methods** and **functions** (targets), so when called, user-defined hooks will be executed upstream or downstream according to the spec (either `BEFORE` or `AFTER`) provided by the user. 
 
-# Bind hooks to an event
+Arguments to targets are passed to hooks which can modify them or replace the targets themselves with an arbitrary [callable](https://en.wikipedia.org/wiki/Callable_object) or `None`. 
 
-Let's bind a hook to a specific event:
+Thanks to the tagging mechanism, hooks are not directly tied to targets but to tags (either user-defined or derived from functions or methods themselves). Thus, hooks are loosely coupled to targets and dynamically bound to tags.
+
+# Tagging mechanism
+The `H.tag` class method allows you to tag a function or a method:
+```python
+from hooking import H
+
+@H.tag
+def my_func(*args, **kwargs):
+    pass
+
+class MyClass:
+    @H.tag
+    def my_method(self, *args, **kwargs):
+        pass
+```
+`H.tag` accepts a `label` string as argument. By default, when this argument isn't provided, the library uses the [qualified name](https://peps.python.org/pep-3155/) of the method or function as the `label`.
+
+Here we provide the `label` argument:
+```python
+from hooking import H
+
+@H.tag("my_func")
+def my_func(*args, **kwargs):
+    pass
+
+class MyClass:
+    @H.tag("MyClass.my_method")
+    def my_method(self, *args, **kwargs):
+        pass
+```
+
+# Bind hooks
+Hooks are not directly bound to functions or methods but to tags. The `H.bind` class method  allows the user to bind a hook to a tag and specify with the `spec` parameter whether the hook should be run upstream or downstream.
+
+```python
+from hooking import H, BEFORE, AFTER
+
+@H.tag("target")
+def my_func(*args, **kwargs):
+    pass
+
+def my_hook1(context):
+    pass
+
+def my_hook2(context):
+    pass
+
+# bind my_hook1 to "target" and run it upstream
+H.bind("target", my_hook1) # by default, spec == BEFORE
+
+# bind my_hook1 to "target" and run it downstream
+hook_id = H.bind("target", my_hook2, spec=AFTER)
+```
+The `H.bind` class method returns a Hook ID (HID) which could be used later to **unbind** the hook:
+
+```python
+from hooking import H
+
+def hook(context):
+    pass
+
+# bind
+hid = H.bind("tag", hook)
+
+# unbind
+H.unbind(hid)
+```
+
+**Multiple** hooks can be unbound in a single statement:
 
 ```python
 from hooking import H
 
 def hook1(context):
-    """
-    context is an instance of the namedtuple hooking.dto.Context
-    Here are its attributes: h, hid, event, spec, accept_input
-    """
-    print("Hook 1")
-    
+    pass
+
 def hook2(context):
-    print("Hook 2")
-    
-h = H()
-# bind hook1 and hook2 to the event "my-event"
-h.bind("my-event", hook1)
-h.bind("my-event", hook2)
-```
-When the event `my-event` will start, `hook1` and `hook2` will be called:
-```python
-# notify hooks of beginning of "my-event"
-h.enter_event("my-event")
-# hook1 will be called -> "Hook 1"
-# hook2 will be called -> "Hook 2"
+    pass
+
+# bind
+hid1 = H.bind("tag", hook1)
+hid2 = H.bind("tag", hook2)
+
+# unbind multiple hooks manually
+H.unbind(hid1, hid2)
+
+# unbind all hooks automatically
+H.unbind()
 ```
 
-> Note that the `bind` method returns a unique hook id (`hid`).
-> 
-> The `hooks` property returns registered hids (Hook IDs).
-> 
-> The `events` property returns events previously referenced.
-
-## Specify an event lifecycle stage
-By default, a hook is bound to the beginning of an event. More specifically, the `spec` parameter defaults to `ENTER`. The `spec` parameter can accept `ENTER`, `LEAVE`, and `ANY`.
+# Anatomy of a hook
+A hook is a callable that accepts an instance of `hooking.Context` that exposes the following attributes:
+- `hid`: the Hook ID (HID) as returned by `H.bind`;
+- `tag`: the label string used to tag a function or method;
+- `spec`: one of the `BEFORE` or `AFTER` constants;
+- `target`: the function or method tagged with the `H.tag` decorator;
+- `args`: tuple representing the arguments passed to the target;
+- `kwargs`: dictionary representing the keyword arguments passed to the target;
+- `result`: when spec is set to `AFTER`, this attribute contains the value returned by the target.
 
 ```python
-from hooking import H, ENTER, LEAVE, ANY
+from hooking import H, BEFORE, AFTER
+
+@H.tag("target")
+def my_func(*args, **kwargs):
+    pass
+
+def my_hook(context):
+    if context.tag != "target":
+        raise Exception("Wrong tag !")
+
+H.bind("target", my_hook)
+```
+
+# Chain break
+This library exposes an exception subclass to allow the programmer to break the execution of a chain of hooks:
+```python
+from hooking import H, ChainBreak
+
+@H.tag("target")
+def my_func(*args, **kwargs):
+    pass
 
 def hook1(context):
     pass
 
 def hook2(context):
-    pass
+    raise ChainBreak
 
 def hook3(context):
     pass
 
-h = H()
+# bind hook1, hook2 and hook3 to 'target'
+for hook in (hook1, hook2, hook3):
+    H.bind("target", hook)
 
-# hook1 will be called at the beginning of 'my-event'
-h.bind("my-event", hook1, spec=ENTER)
+# call the target
+my_func()
 
-# hook2 will be called at the end of 'my-event'
-h.bind("my-event", hook2, spec=LEAVE)
+# since the target was called,
+# the chain of hooks (hook1, hook2, hook3)
+# must be executed.
 
-# hook3 will be called at the beginning and the end of 'my-event'
-h.bind("my-event", hook3, spec=ANY)
+# hook2 having used ChainBreak,
+# the chain of execution will be broken
+# and hook3 will be ignored
 
-# ...
-
-# notify hooks of beginning of "my-event"
-h.enter_event("my-event")
-
-# ...
-
-# notify hooks of end of "my-event"
-h.leave_event("my-event")
 ```
 
-## Pass data to a hook
-In the following script, we will bind a hook to an event, then pass data to the hook while notifying it of the beginning of that event:
+# Freeze tags
+We could freeze a tag and thus prevent the execution of hooks bound to this tag:
 ```python
-from hooking import H
+from hooking import H, BEFORE, AFTER
 
-def hook1(context, age, name):
+@H.tag
+def my_func(*args, **kwargs):
     pass
 
-def hook2(context, name, age):
-    pass
+H.freeze("my_func")
 
-h = H()
-
-# by default, accept_input is set to True
-h.bind("my-event", hook1, accept_input=True)
-h.bind("my-event", hook2, accept_input=True)
-
-# ...
-
-# notify hook1 and hook2 of beginning of "my-event"
-# pass data (age and name) to these hooks
-h.enter_event("my-event", age=42, name="John Doe")
+# from now on hooks bound to `my_func` will no longer be executed
 ```
-
-# Unbind hooks from an event
-You can unbind hooks previously bound to an event by passing hooks ids (`hid`) to the `unbind` method:
+The `H.freeze` class method can freeze multiple tags at once, or the entire hooking mechanism:
 ```python
-from hooking import H
+from hooking import H, BEFORE, AFTER
 
-def hook1(context):
-    pass
+# freeze all tags manually
+H.freeze("tag1", "tag2", "tag3", "tagx")
 
-def hook2(context):
-    pass
+# freeze the entire hooking mechanism
+H.freeze()
 
-h = H()
-
-# bind
-hid1 = h.bind("my-event", hook1)
-hid2 = h.bind("my-event", hook2)
-
-# unbind
-h.unbind(hid1, hid2)
+# from now, no hook will be executed anymore
 ```
 
-# Enter an event
-Entering an event is synonymous with notifying hooks of the start of an event:
+To **unfreeze** specific tags or the entire hooking mechanism, use the `H.unfreeze` class method:
 ```python
-from hooking import H
+from hooking import H, BEFORE, AFTER
 
-def hook1(context):
-    pass
+# unfreeze all tags manually
+H.unfreeze("tag1", "tag2", "tag3", "tagx")
 
-h = H()
+# unfreeze the entire hooking mechanism
+H.unfreeze()
 
-# bind
-h.bind("my-event", hook1)
-
-# notify hooks of the beginning of "my-event"
-h.enter_event("my-event")
+# from now, hooks will be executed when needed
 ```
 
-# Leave an event
-Leaving an event is synonymous with notifying hooks of the end of an event:
-```python
-from hooking import H
+# Exposed variables
+The `H` class exposes the following class variables:
+- `hooks`: dict, keys are HIDs (Hook IDs), values are instances of `HookInfo`; 
+- `tags`: dict to hold relationship between tags and HIDs. Keys are tags, and values are sets; 
+- `frozen`: boolean to tell whether the hooking mechanism is frozen or not;
+- `frozen_tags`: set containing frozen tags.
 
-def hook1(context):
-    pass
-
-h = H()
-
-# bind
-h.bind("my-event", hook1)
-
-# notify hooks of the beginning of "my-event"
-h.enter_event("my-event")
-
-# notify hooks of the end of "my-event"
-h.leave_event("my-event")
-```
-
-# Break an event
-From a hook, we might need to break the execution of a running event:
-```python
-import sys
-from hooking import H, Break
-
-def hook1(context):
-    # raising Break will make H.enter_event or H.leave_event method
-    # returns False instead of True
-    raise Break
-    
-h = H()
-
-# bind
-h.bind("my-event", hook1)
-
-# notify hooks of the beginning of "my-event"
-if not h.enter_event("my-event"):  # if method returns False
-    # break the event
-    sys.exit()  # exit !
-    
-# ...
-
-# notify hooks of the end of "my-event"
-h.leave_event("my-event")
-```
-
-# Check a hook
-You can check if a hook has been registered or not:
-```python
-from hooking import H
-
-def hook1(context):
-    pass
-
-h = H()
-hid = h.bind("my-event", hook1)
-
-# Check 
-hook_info = h.check_hook(hid)
-# hook_info would be None if the hid (Hook ID) doesn't exist,
-# but in the current case, the hid exists, thus hook_info is not None,
-# instead, hook_info contains an instance of hooking.dto.HookInfo
-# HookInfo has the following attributes: hid, event, spec, accept_input
-```
-
-# Check an event
-You can check whether there are hooks bound to a given event or not:
-```python
-from hooking import H
-
-def hook1(context):
-    pass
-
-h = H()
-h.bind("my-event", hook1)
-
-# Check 
-hids = h.check_event("my-event")
-# 'hids' would be None if there are no hooks bound to "my-event",
-# but in the current case, hook1 is bound to "my-event", 
-# thus 'hids' is not None, instead, 'hids' is a
-# tuple that contains the hids (Hook IDs) of hooks bound to "my-event"
-```
-
-# Freeze and unfreeze a session
-The programmer may need to temporarily **freeze** the hooking session, and in this case no hook will be called when an event occurs:
-```python
-from hooking import H
-
-def hook1(context):
-    pass
-
-h = H()
-
-# bind
-h.bind("my-event", hook1)
-
-# freeze the session
-h.freeze()
-
-# no hook will be called
-h.enter_event("my-event")
-# ...
-h.leave_event("my-event")
-```
-
-**Unfreezing** the hooking session is as simple as calling the `unfreeze` method:
-```python
-h.unfreeze()
-```
-
-> The `frozen` property is a boolean that indicates whether the session is frozen or not.
-
-# Clear events and hooks
-The `clear` method resets the hooking session:
-```python
-from hooking import H
-
-def hook1(context):
-    pass
-
-h = H()
-
-# bind
-h.bind("my-event", hook1)
-
-# delete events and the references to hooks
-h.clear()  # also unfreeze the session (if previously frozen)
-```
+# Clear data
+The `H.clear` class method resets the following class variables: `H.hooks`, `H.tags`, `H.frozen`, `H.frozen_tags`.
 
 # Miscellaneous
-Loading...
+Whenever threads are introduced into a program, the state shared between threads becomes vulnerable to corruption. To avoid this situation, this library uses [threading.Lock](https://docs.python.org/3/library/threading.html#lock-objects) as a synchronization tool.
 
 # Installation
-**Hooking** is **cross platform** and versions under **1.0.0** will be considered **Beta** at best. It should work on **Python 3.5** or [newer](https://www.python.org/downloads/).
+**Hooking** is **cross-platform** and should work on **Python 3.5** or [newer](https://www.python.org/downloads/).
 
 ## For the first time
 

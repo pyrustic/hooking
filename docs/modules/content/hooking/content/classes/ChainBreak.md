@@ -12,7 +12,35 @@ Hooking module
 >
 > **Constants:** &nbsp; AFTER &nbsp;&nbsp; BEFORE
 
-# All Functions
+# Class ChainBreak
+Break the execution of a chain of hooks
+
+## Base Classes
+hooking.Error
+
+## Class Attributes
+args (inherited from BaseException)
+
+## Class Properties
+
+
+# All Methods
+[\_\_init\_\_](#__init__)
+
+## \_\_init\_\_
+Initialize self.  See help(type(self)) for accurate signature.
+
+**Inherited from:** Exception
+
+**Signature:** (self, /, \*args, \*\*kwargs)
+
+
+
+
+
+**Return Value:** None
+
+[Back to Top](#module-overview)
 
 
 

@@ -12,20 +12,60 @@ Hooking module
 >
 > **Constants:** &nbsp; AFTER &nbsp;&nbsp; BEFORE
 
-# Class H
-Main class
+# Class Context
+An instance of this class is passed to hooks
 
 ## Base Classes
 object
 
 ## Class Attributes
-bind &nbsp;&nbsp; clear &nbsp;&nbsp; freeze &nbsp;&nbsp; frozen &nbsp;&nbsp; frozen\_tags &nbsp;&nbsp; hooks &nbsp;&nbsp; i &nbsp;&nbsp; lock &nbsp;&nbsp; tag &nbsp;&nbsp; tags &nbsp;&nbsp; unbind &nbsp;&nbsp; unfreeze
+No class attributes.
 
 ## Class Properties
+|Property|Type|Description|Inherited from|
+|---|---|---|---|
+|args|getter|Get args||
+|args|setter|Set args||
+|hid|getter|Get hid||
+|kwargs|getter|Get kwargs||
+|kwargs|setter|Set kwargs||
+|result|getter|Get result||
+|result|setter|Set result||
+|spec|getter|Get spec||
+|tag|getter|Get tag||
+|target|getter|Get target||
+|target|setter|Set target||
+
 
 
 # All Methods
+[\_\_init\_\_](#__init__)
 
+## \_\_init\_\_
+Initialize a context object
+
+
+
+
+**Signature:** (self, hid, tag, spec, target, args, kwargs, result)
+
+|Parameter|Description|
+|---|---|
+|hid|hook id|
+|tag|str, the label used to tag a function or method|
+|spec|either BEFORE or AFTER|
+|target|the tagged function or method|
+|args|tuple representing arguments passed to the target|
+|kwargs|dict representing keyword arguments passed to the target|
+|result|if spec is set to AFTER, result is the value returned by the target|
+
+
+
+
+
+**Return Value:** None
+
+[Back to Top](#module-overview)
 
 
 
