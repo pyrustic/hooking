@@ -33,7 +33,7 @@ This project is part of the [Pyrustic Open Ecosystem](https://pyrustic.github.io
 - [Installation](#installation)
 
 # Overview
-This library, written in **Python**, implements an intuitive and minimalist [hooking](https://en.wikipedia.org/wiki/Hooking) mechanism. It exposes a [decorator](https://peps.python.org/pep-0318/) to tag **methods** and **functions** (targets), so when called, user-defined hooks will be executed upstream or downstream according to the spec (either `BEFORE` or `AFTER`) provided by the user. 
+This library, written in **Python**, implements an intuitive and minimalist [hooking](https://en.wikipedia.org/wiki/Hooking) mechanism. It exposes a [decorator](https://peps.python.org/pep-0318/) to tag **methods** and **functions** (targets), and so when they are called, user-defined hooks will be executed upstream or downstream according to the spec (either `BEFORE` or `AFTER`) provided by the user. 
 
 Arguments to targets are passed to hooks which can modify them or replace the targets themselves with an arbitrary [callable](https://en.wikipedia.org/wiki/Callable_object) or `None`. 
 
