@@ -29,6 +29,7 @@ This project is part of the [Pyrustic Open Ecosystem](https://pyrustic.github.io
 - [Freeze tags](#freeze-tags)
 - [Exposed variables](#exposed-variables)
 - [Clear data](#clear-data)
+- [Examples](#examples)
 - [Miscellaneous](#miscellaneous)
 - [Installation](#installation)
 
@@ -38,6 +39,17 @@ This library, written in **Python**, implements an intuitive and minimalist [hoo
 Arguments to targets are passed to hooks which can modify them or replace the targets themselves with an arbitrary [callable](https://en.wikipedia.org/wiki/Callable_object) or `None`. 
 
 Thanks to the tagging mechanism, hooks are not directly tied to targets but to tags (either user-defined or derived from functions or methods themselves). Thus, hooks are loosely coupled to targets and dynamically bound to tags.
+
+## Why use this library
+This library allows the programmer to **augment** a function or method. It is therefore the perfect solution to create a [plugin mechanism](https://en.wikipedia.org/wiki/Plug-in_(computing)) for a project. It can also be used for **debugging** or **benchmarking**. Thanks to its generic nature, one can consider "tags" as "events" and use this library to perform [event-driven programming](https://en.wikipedia.org/wiki/Event-driven_programming). This project can also help implement routing in a web development framework ([Flask](https://fr.wikipedia.org/wiki/Flask_(framework)) uses decorators to implement [routing](https://divpusher.com/glossary/routing/)).
+
+The interface of this library is designed to be intuitive not only for an API author who needs to implement hooking, but also for API consumers who need an easy and efficient way to interact with an API.
+
+Check out few [examples](#examples).
+
+## About decoration
+This library uses Python [decorators](https://peps.python.org/pep-0318/) to tag functions and methods. This is a change from earlier iterations where the programmer had to store and pass a reference to an instance of the `Hooking` class. Decorators make the interface more intuitive and convenient to interact with.
+
 
 # Tagging mechanism
 The `H.tag` class method allows you to tag a function or a method:
@@ -235,6 +247,16 @@ The `H` class exposes the following class variables:
 
 # Clear data
 The `H.clear` class method resets the following class variables: `H.hooks`, `H.tags`, `H.frozen`, `H.frozen_tags`.
+
+
+# Examples
+
+
+
+
+
+
+
 
 # Miscellaneous
 Whenever threads are introduced into a program, the state shared between threads becomes vulnerable to corruption. To avoid this situation, this library uses [threading.Lock](https://docs.python.org/3/library/threading.html#lock-objects) as a synchronization tool.
