@@ -41,7 +41,7 @@ Arguments to targets are passed to hooks which can modify them or replace the ta
 Thanks to the tagging mechanism, hooks are not directly tied to targets but to tags (either user-defined or derived from functions or methods themselves). Thus, hooks are loosely coupled to targets and dynamically bound to tags.
 
 ## Why use this library
-This library allows the programmer to **augment** a function or method. It is therefore the perfect solution to create a [plugin mechanism](https://en.wikipedia.org/wiki/Plug-in_(computing)) for a project. It can also be used for **debugging** or **benchmarking**. Thanks to its generic nature, one can consider "tags" as "events" and use this library to perform [event-driven programming](https://en.wikipedia.org/wiki/Event-driven_programming). This project can also help implement routing in a web development framework ([Flask](https://fr.wikipedia.org/wiki/Flask_(framework)) uses decorators to implement [routing](https://divpusher.com/glossary/routing/)).
+This library allows the programmer to **augment** a function or method. It is therefore the perfect solution to create a [plugin mechanism](https://en.wikipedia.org/wiki/Plug-in_(computing)) for a project. It can also be used for **debugging** or **benchmarking**. Thanks to its generic nature, one can consider "tags" as "events" and use this library to perform [event-driven programming](https://en.wikipedia.org/wiki/Event-driven_programming). This project can also help implement routing in a web development framework ([Flask](https://en.wikipedia.org/wiki/Flask_(web_framework)) uses decorators to implement [routing](https://divpusher.com/glossary/routing/)).
 
 The interface of this library is designed to be intuitive not only for an API author who needs to implement hooking, but also for API consumers who need an easy and efficient way to interact with an API.
 
@@ -250,10 +250,76 @@ The `H.clear` class method resets the following class variables: `H.hooks`, `H.t
 
 
 # Examples
+Just few examples.
+
+## Event-driven programming
 
 
+```python
+from hooking import H, BEFORE, AFTER
+from myapp import App
 
 
+class Dashboard(App):
+        
+    H.tag
+    def on_login(self, event, username, password):
+        pass
+
+# hook to run before login
+def before_login(context):
+    pass
+
+# hook to run after login
+def after_login(context):
+    pass
+    
+
+# bind hooks to the "Dashboard.on_login" tag
+H.bind("Dashboard.on_login", before_login)  # by default spec == BEFORE
+H.bind("Dashboard.on_login", after_login, spec=AFTER)
+
+
+if __name__ == "__main__":
+    dashboard = Dashboard()
+    dashboard.run()
+    # from now, before_login hook will be executed before the login
+    # and after_login hook will be executed after the login
+```
+
+## Micro web framework
+
+```python
+from hooking import H, BEFORE, AFTER
+from mywebframework import App
+
+
+class Dashboard(App):
+        
+    H.tag("/site/login")
+    def on_login(self, event, username, password):
+        pass
+
+# hook to run before login
+def before_login(context):
+    pass
+
+# hook to run after login
+def after_login(context):
+    pass
+    
+
+# bind hooks to the "Dashboard.on_login" tag
+H.bind("Dashboard.on_login", before_login)  # by default spec == BEFORE
+H.bind("Dashboard.on_login", after_login, spec=AFTER)
+
+
+if __name__ == "__main__":
+    dashboard = Dashboard()
+    dashboard.run()
+    # from now, before_login hook will be executed before the login
+    # and after_login hook will be executed after the login
+```
 
 
 
