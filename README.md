@@ -322,8 +322,6 @@ if __name__ == "__main__":
 ```
 
 
-
-
 # Miscellaneous
 Whenever threads are introduced into a program, the state shared between threads becomes vulnerable to corruption. To avoid this situation, this library uses [threading.Lock](https://docs.python.org/3/library/threading.html#lock-objects) as a synchronization tool.
 
