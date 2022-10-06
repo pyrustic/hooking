@@ -50,6 +50,7 @@ Check out few [examples](#examples).
 ## About decoration
 This library uses Python [decorators](https://peps.python.org/pep-0318/) to tag functions and methods. This is a change from earlier iterations where the programmer had to store and pass a reference to an instance of the `Hooking` class. Decorators make the interface more intuitive and convenient to interact with.
 
+<p align="right"><a href="#readme">Back to top</a></p>
 
 # Tagging mechanism
 The `H.tag` class method allows you to tag a function or a method:
