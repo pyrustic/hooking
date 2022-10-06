@@ -82,6 +82,8 @@ class MyClass:
         pass
 ```
 
+<p align="right"><a href="#readme">Back to top</a></p>
+
 # Bind hooks
 Hooks are not directly bound to functions or methods but to tags. The `H.bind` class method  allows the user to bind a hook to a tag and specify with the `spec` parameter whether the hook should be run upstream or downstream.
 
@@ -141,6 +143,8 @@ H.unbind(hid1, hid2)
 H.unbind()
 ```
 
+<p align="right"><a href="#readme">Back to top</a></p>
+
 # Anatomy of a hook
 A hook is a callable that accepts an instance of `hooking.Context` that exposes the following attributes:
 - `hid`: the Hook ID (HID) as returned by `H.bind`;
@@ -164,6 +168,8 @@ def my_hook(context):
 
 H.bind("target", my_hook)
 ```
+
+<p align="right"><a href="#readme">Back to top</a></p>
 
 # Chain break
 This library exposes an exception subclass to allow the programmer to break the execution of a chain of hooks:
@@ -199,6 +205,8 @@ my_func()
 # and hook3 will be ignored
 
 ```
+
+<p align="right"><a href="#readme">Back to top</a></p>
 
 # Freeze tags
 We could freeze a tag and thus prevent the execution of hooks bound to this tag:
@@ -239,6 +247,8 @@ H.unfreeze()
 # from now, hooks will be executed when needed
 ```
 
+<p align="right"><a href="#readme">Back to top</a></p>
+
 # Exposed variables
 The `H` class exposes the following class variables:
 - `hooks`: dict, keys are HIDs (Hook IDs), values are instances of `HookInfo`; 
@@ -246,9 +256,12 @@ The `H` class exposes the following class variables:
 - `frozen`: boolean to tell whether the hooking mechanism is frozen or not;
 - `frozen_tags`: set containing frozen tags.
 
+<p align="right"><a href="#readme">Back to top</a></p>
+
 # Clear data
 The `H.clear` class method resets the following class variables: `H.hooks`, `H.tags`, `H.frozen`, `H.frozen_tags`.
 
+<p align="right"><a href="#readme">Back to top</a></p>
 
 # Examples
 Just few examples.
@@ -322,9 +335,12 @@ if __name__ == "__main__":
     # and after_login hook will be executed after the login
 ```
 
+<p align="right"><a href="#readme">Back to top</a></p>
 
 # Miscellaneous
 Whenever threads are introduced into a program, the state shared between threads becomes vulnerable to corruption. To avoid this situation, this library uses [threading.Lock](https://docs.python.org/3/library/threading.html#lock-objects) as a synchronization tool.
+
+<p align="right"><a href="#readme">Back to top</a></p>
 
 # Installation
 **Hooking** is **cross-platform** and should work on **Python 3.5** or [newer](https://www.python.org/downloads/).
