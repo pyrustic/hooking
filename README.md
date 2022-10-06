@@ -310,8 +310,8 @@ def after_login(context):
     
 
 # bind hooks to the "Dashboard.on_login" tag
-H.bind("Dashboard.on_login", before_login)  # by default spec == BEFORE
-H.bind("Dashboard.on_login", after_login, spec=AFTER)
+H.bind("/site/login", before_login)  # by default spec == BEFORE
+H.bind("/site/login", after_login, spec=AFTER)
 
 
 if __name__ == "__main__":
