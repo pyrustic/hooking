@@ -12,27 +12,77 @@ No description
 >
 > **Constants:** &nbsp; ENTER &nbsp;&nbsp; LEAVE
 
-# Class Error
-Error class
+# Class TargetInfo
+TargetInfo(cls, tag, target, config)
 
 ## Base Classes
-Exception
+tuple
 
 ## Class Attributes
-args (inherited from BaseException)
+\_field\_defaults &nbsp;&nbsp; \_fields &nbsp;&nbsp; \_fields\_defaults &nbsp;&nbsp; \_make &nbsp;&nbsp; cls &nbsp;&nbsp; config &nbsp;&nbsp; tag &nbsp;&nbsp; target
 
 ## Class Properties
 
 
 # All Methods
-[\_\_init\_\_](#__init__)
+[count](#count) &nbsp;&nbsp; [index](#index) &nbsp;&nbsp; [\_asdict](#_asdict) &nbsp;&nbsp; [\_replace](#_replace)
 
-## \_\_init\_\_
-Initialize self.  See help(type(self)) for accurate signature.
+## count
+Return number of occurrences of value.
 
-**Inherited from:** Exception
+**Inherited from:** tuple
 
-**Signature:** (self, /, \*args, \*\*kwargs)
+**Signature:** (self, value, /)
+
+
+
+
+
+**Return Value:** None
+
+[Back to Top](#module-overview)
+
+
+## index
+Return first index of value.
+
+Raises ValueError if the value is not present.
+
+**Inherited from:** tuple
+
+**Signature:** (self, value, start=0, stop=9223372036854775807, /)
+
+
+
+
+
+**Return Value:** None
+
+[Back to Top](#module-overview)
+
+
+## \_asdict
+Return a new dict which maps field names to their values.
+
+
+
+**Signature:** (self)
+
+
+
+
+
+**Return Value:** None
+
+[Back to Top](#module-overview)
+
+
+## \_replace
+Return a new TargetInfo object replacing specified fields with new values
+
+
+
+**Signature:** (self, /, \*\*kwds)
 
 
 

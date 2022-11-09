@@ -2,15 +2,15 @@ Back to [All Modules](https://github.com/pyrustic/hooking/blob/master/docs/modul
 
 # Module Overview
 
-**hooking**
+**hooking.tight**
  
-No description
+Tight coupling paradigm
 
-> **Classes:** &nbsp; [ChainBreak](https://github.com/pyrustic/hooking/blob/master/docs/modules/content/hooking/content/classes/ChainBreak.md#class-chainbreak) &nbsp;&nbsp; [Context](https://github.com/pyrustic/hooking/blob/master/docs/modules/content/hooking/content/classes/Context.md#class-context) &nbsp;&nbsp; [Error](https://github.com/pyrustic/hooking/blob/master/docs/modules/content/hooking/content/classes/Error.md#class-error) &nbsp;&nbsp; [H](https://github.com/pyrustic/hooking/blob/master/docs/modules/content/hooking/content/classes/H.md#class-h) &nbsp;&nbsp; [HookInfo](https://github.com/pyrustic/hooking/blob/master/docs/modules/content/hooking/content/classes/HookInfo.md#class-hookinfo) &nbsp;&nbsp; [TargetInfo](https://github.com/pyrustic/hooking/blob/master/docs/modules/content/hooking/content/classes/TargetInfo.md#class-targetinfo)
+> **Classes:** &nbsp; None
 >
 > **Functions:** &nbsp; [on\_enter](#on_enter) &nbsp;&nbsp; [on\_leave](#on_leave) &nbsp;&nbsp; [wrap](#wrap)
 >
-> **Constants:** &nbsp; ENTER &nbsp;&nbsp; LEAVE
+> **Constants:** &nbsp; None
 
 # All Functions
 [on\_enter](#on_enter) &nbsp;&nbsp; [on\_leave](#on_leave) &nbsp;&nbsp; [wrap](#wrap)
