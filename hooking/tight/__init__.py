@@ -1,7 +1,33 @@
 """Tight coupling paradigm"""
+from collections import OrderedDict
 from functools import wraps
 from hooking.runner import Runner
+from hooking.context import Context
 from hooking import dto
+from hooking.error import ChainBreak
+
+
+def override(hook, **config):
+    """
+    Override target with a hook
+
+    [parameters]
+    - hook: hook to override target
+    - **config: configuration keyword arguments
+    """
+    def deco(target):
+
+        @wraps(target)
+        def wrapper(*args, **kwargs):
+            context = Context(cls=None, tag=None, config=config, target=target,
+                              args=args, kwargs=kwargs, shared=OrderedDict())
+            try:
+                result = hook(context, *args, **kwargs)
+            except ChainBreak as e:
+                pass
+            return context.result
+        return wrapper
+    return deco
 
 
 def wrap(hook1, hook2, **config):

@@ -75,5 +75,23 @@ class HookManipulationCase(unittest.TestCase):
         self.assertEqual(42, result)
 
 
+class TargetOverrideCase(unittest.TestCase):
+
+    def setUp(self):
+        pass
+
+    def tearDown(self):
+        pass
+
+    def test_func(self):
+        result = base.calc5(1, 2, op="+")
+        self.assertEqual(3, result)
+
+    def test_method(self):
+        calculator = base.Calculator()
+        result = calculator.calc5(1, 2, op="+")
+        self.assertEqual(3, result)
+
+
 if __name__ == '__main__':
     unittest.main()

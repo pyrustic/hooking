@@ -1,4 +1,4 @@
-from hooking import wrap, on_enter, on_leave
+from hooking import wrap, on_enter, on_leave, override
 
 
 # =============== HOOKS ===============
@@ -76,6 +76,10 @@ def do_manip_after_method(context, *args, **kwargs):
     context.result += 40
 
 
+def do_override(context, *args, **kwargs):
+    context.result = context.target(*args, **kwargs)
+
+
 # =============== TARGETS - TIGHT COUPLING ===============
 
 
@@ -105,6 +109,14 @@ def calc3(a, b, op):
 
 @wrap(do_manip_before_func, do_manip_after_func, x=1, y=2)
 def calc4(a, b, op):
+    if op == "+":
+        return a + b
+    if op == "-":
+        return a - b
+
+
+@override(do_override)
+def calc5(a, b, op):
     if op == "+":
         return a + b
     if op == "-":
@@ -143,6 +155,13 @@ class Calculator:
 
     @wrap(do_manip_before_method, do_manip_after_method, x=1, y=2)
     def calc4(self, a, b, op):
+        if op == "+":
+            return a + b
+        if op == "-":
+            return a - b        
+            
+    @override(do_override)
+    def calc5(self, a, b, op):
         if op == "+":
             return a + b
         if op == "-":

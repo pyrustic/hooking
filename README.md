@@ -40,13 +40,13 @@ This project is part of the [Pyrustic Open Ecosystem](https://pyrustic.github.io
 # Overview
 This project is a minimalist [Python](https://www.python.org) library that implements an intuitive, flexible, and generic dual-paradigm [hooking](https://en.wikipedia.org/wiki/Hooking) mechanism.
 
-In short, **methods** and **functions**, called **targets**, are [decorated](https://peps.python.org/pep-0318/) and assigned user-defined **hooks**. So when a target is called, the assigned hooks will be automatically executed **upstream** or **downstream** according to the specificiation (either `on_enter` or `on_leave`) provided by the programmer.
+In short, **methods** and **functions**, called **targets**, are [decorated](https://peps.python.org/pep-0318/) and assigned user-defined **hooks**. So when a target is called, the assigned hooks will be automatically executed **upstream** or **downstream** according to the specification provided by the programmer.
 
 The programmer may wish to have **tight** or **loose** [coupling](https://en.wikipedia.org/wiki/Coupling_(computer_programming)) between targets and hooks, depending on the requirement. Hence, for a nice developer experience, this library provides two interfaces each representing a **paradigm** (tight or loose coupling) to cover the needs.
 
 From a hook, the programmer has access to the keyword arguments passed to the decorator, the arguments passed to the target, the target itself, and other useful information through a `Context` object.
 
-Depending on whether the hook is executed upstream or downstream, the programmer can modify arguments to target, override the target itself with an arbitrary [callable](https://en.wikipedia.org/wiki/Callable_object) or `None`, break the execution of the chain of hooks, modify the return of the target, et cetera.
+Depending on whether the hook is executed upstream or downstream, the programmer can modify arguments to target, override the target itself with an arbitrary [callable](https://en.wikipedia.org/wiki/Callable_object), break the execution of the chain of hooks, modify the return of the target, et cetera.
 
 
 ## Why use this library
@@ -63,13 +63,13 @@ The interface of this library is designed to be intuitive to use not only for **
 Here are some examples of using this library in the tight and loose coupling paradigm.
 
 ## Measure execution time
-Here we will use the tight coupling paradigm to attach a hook upstream of the execution of a target function. From inside the hook, the target will be executed and we will measure the execution time.
+Here we will use the tight coupling paradigm to override the target function with a hook. From inside the hook, the target will be executed and we will measure the execution time.
 
 The following example can be copy-pasted into a file (e.g. `test.py`) and run as is:
 
 ```python
 import time
-from hooking import on_enter
+from hooking import override
 
 
 def timeit(context, *args, **kwargs):
@@ -80,16 +80,12 @@ def timeit(context, *args, **kwargs):
     # print elapsed time
     text = context.config.get("text")  # get 'text' from config data
     print(text.format(total=total_time))
-    # by default, the target is automatically run outside the hook
-    # between upstream and downstream hooks.
-    # setting it to None makes sure it won't be rerun
-    context.target = None
 
 
-# decorate 'heavy_computation' with 'on_enter' (tight coupling)
+# decorate 'heavy_computation' with 'override' (tight coupling)
 # here, 'timeit' is the hook to execute when the target is called
 # all following keyword arguments are part of the configuration data
-@on_enter(timeit, text="Done in {total:.3f} seconds !")
+@override(timeit, text="Done in {total:.3f} seconds !")
 def heavy_computation(a, b):
     time.sleep(2)  # doing some heavy computation !
     return a*b
@@ -264,22 +260,37 @@ def upstream_hook(context, *args, **kwargs):
     # positional arguments are represented with a tuple
     context.args = (val1, val2)
     # keywords arguments are represented with a dictionary
-    context.kwargs = {"item1": val, "item2": val}
+    context.kwargs = {"item1": val1, "item2": val2}
  
 # ...
 ``` 
 
 ## Override the target
-From an upstream hook, we can override the target:
+The library exposes the `hooking.override` to override a target function:
+
 ```python
-# ...
+from hooking import override
+
+def myhook(context, *args, **kwargs):
+    context.result = new_target_function(*args, **kwargs)
+
+@override(myhook) 
+def target():
+    pass
+```
+
+but one can still override the target from an arbitrary **upstream** hook:
+```python
+from hooking import on_enter
 
 def upstream_hook(context, *args, **kwargs):
     # override target with a new target that
     # that accepts same type signature
     context.target = new_target_function
  
-# ...
+@on_enter(upstream_hook) 
+def target():
+    pass
 ``` 
 
 Note that you can set `None` to `context.target` to prevent the library for automatically running the target between the execution of upstream and downstream hooks.
@@ -303,18 +314,24 @@ In this paradigm, hooks are directly bound to target. The library exposes the fo
 
 |Decorator|Description|Signature
 |---|---|---|
+|`hooking.override`|Bind to a target a hook that will override it|`@override(hook, **config)`|
 |`hooking.on_enter`|Bind to a target a hook that will be executed upstream, i.e, before the target|`@on_enter(hook, **config)`|
 |`hooking.on_leave`|Bind to a target a hook that will be executed downstream, i.e, after the target|`@on_leave(hook, **config)`|
 |`hooking.wrap`|Bind to a target two hooks that will be executed upstream and downstream|`@wrap(hook1, hook2, **config)`|
 
 ```python
-from hooking import on_enter, on_leave, wrap
+from hooking import on_enter, on_leave, wrap, override
 
 def hook1(context, *args, **kwargs):
     pass
 
 def hook2(context, *args, **kwargs):
     pass
+
+def hook3(context, *args, **kwargs):
+    context.result = context.target(*args, **kwargs)
+    # or
+    context.result = my_new_target(*args, **kwargs)
 
 # bind an upstream hook to my_func1
 @on_enter(hook1, foo=42, bar="Alex")  # foo and bar are config data
@@ -326,11 +343,18 @@ def my_func1():
 def my_func2():
     pass
 
-# bind a upstream hook and a downstream hook to my_func3
+# bind an upstream hook and a downstream hook to my_func3
 @wrap(hook1, hook2, foo=42, bar="Alex") 
 def my_func3():
     pass
+
+# override my_func4 with hook3
+@override(hook3, foo=42, bar="Alex")
+def my_func4():
+    pass
 ```
+
+> Note that with the `hooking.override` decorator, the programmer must execute the target or its replacement inside the hook and set the result to `context.result`.
 
 
 # Loose coupling
