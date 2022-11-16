@@ -372,6 +372,8 @@ def my_func3():
 
 ```
 
+<p align="right"><a href="#readme">Back to top</a></p>
+
 # Loose coupling
 In this paradigm, hooks aren't directly bound to target but to tags which are linked to targets. The library exposes the `hooking.H` class to support the loose coupling paradigm. In short, the `hooking.H.tag` decorator is used to tag targets, then class methods `hooking.H.on_enter`, `hooking.H.on_leave`, and `hooking.H.wrap` are used to bind hooks to tags.
 
