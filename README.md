@@ -105,6 +105,7 @@ Done in 2.001 seconds !
 Result: 54
 ```
 
+<p align="right"><a href="#readme">Back to top</a></p>
 
 ## Routing by a fictional web framework
 This example is divided into two parts:
@@ -267,6 +268,8 @@ def upstream_hook(context, *args, **kwargs):
 # ...
 ``` 
 
+<p align="right"><a href="#readme">Back to top</a></p>
+
 ## Override the target from a hook
 The library exposes the `hooking.override` to override a target function:
 
@@ -297,6 +300,8 @@ def target():
 ``` 
 
 Note that you can set `None` to `context.target` to prevent the library for automatically running the target between the execution of upstream and downstream hooks.
+
+<p align="right"><a href="#readme">Back to top</a></p>
 
 ## Modify the return of a target
 From a downstream hook, we can change the return of a target:
@@ -342,6 +347,8 @@ def target():
 ```
 
 > Note that with the `hooking.override` decorator, the programmer must execute the target or its replacement inside the hook and set the result to `context.result`.
+
+<p align="right"><a href="#readme">Back to top</a></p>
 
 ## Wrap a target
 The `hooking.wrap` decorator allows the programmer to wrap the target between two hooks that will be executed upstream and downstream. Two additional decorators `hooking.on_enter` and `hooking.on_leave` allow the programmer to bind either a upstream or a downstream hook to a target.
@@ -656,6 +663,8 @@ You may need to reset the hooking class, i.e., reinitialize the contents of the 
 
 > **Note:** targets won't be removed.
 
+<p align="right"><a href="#readme">Back to top</a></p>
+
 ## Subclassing the hooking class
 This library is flexible enough to allow the programmer to create their own subclass of `hooking.H` like this:
 
@@ -675,8 +684,6 @@ Subclassing `hooking.H` allows the programmer to apply the [separation of concer
 
 ## Multithreading
 Whenever threads are introduced into a program, the state shared between threads becomes vulnerable to corruption. To avoid this situation, this library uses [threading.Lock](https://docs.python.org/3/library/threading.html#lock-objects) as a synchronization tool.
-
-
 
 
 <p align="right"><a href="#readme">Back to top</a></p>
