@@ -335,8 +335,6 @@ def myhook(context, *args, **kwargs):
     my_new_target = lambda *args, **kwargs: print("New Target Here !")
     context.result = my_new_target(*args, **kwargs)
 
-
-
 # override target with myhook
 @override(hook3, foo=42, bar="Alex")  # foo and bar are config data
 def target():
