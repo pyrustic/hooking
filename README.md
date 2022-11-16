@@ -369,7 +369,7 @@ def my_func2():
 
 # bind a downstream hook to my_func3
 @on_leave(hook2, foo=42, bar="Alex")
-def my_func2():
+def my_func3():
     pass
 
 ```
