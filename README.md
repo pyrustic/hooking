@@ -26,6 +26,8 @@ This project is part of the [Pyrustic Open Ecosystem](https://pyrustic.github.io
 - [Functions and methods as targets](#functions-and-methods-as-targets)
 - [Anatomy of a hook](#anatomy-of-a-hook)
 - [Tight coupling](#tight-coupling)
+    - [Override a target](#override-a-target)
+    - [Wrap a target](#wrap-a-target)
 - [Loose coupling](#loose-coupling)
     - [Tagging mechanism](#tagging-mechanism)
     - [Bind hooks to tags](#bind-hooks-to-tags)
@@ -265,7 +267,7 @@ def upstream_hook(context, *args, **kwargs):
 # ...
 ``` 
 
-## Override the target
+## Override the target from a hook
 The library exposes the `hooking.override` to override a target function:
 
 ```python
@@ -280,6 +282,7 @@ def target():
 ```
 
 but one can still override the target from an arbitrary **upstream** hook:
+
 ```python
 from hooking import on_enter
 
@@ -315,12 +318,38 @@ In this paradigm, hooks are directly bound to target. The library exposes the fo
 |Decorator|Description|Signature
 |---|---|---|
 |`hooking.override`|Bind to a target a hook that will override it|`@override(hook, **config)`|
+|`hooking.wrap`|Bind to a target two hooks that will be executed upstream and downstream|`@wrap(hook1, hook2, **config)`|
 |`hooking.on_enter`|Bind to a target a hook that will be executed upstream, i.e, before the target|`@on_enter(hook, **config)`|
 |`hooking.on_leave`|Bind to a target a hook that will be executed downstream, i.e, after the target|`@on_leave(hook, **config)`|
-|`hooking.wrap`|Bind to a target two hooks that will be executed upstream and downstream|`@wrap(hook1, hook2, **config)`|
+
+## Override a target
+The library exposes the `hooking.override` decorator to bind to a target a hook that will override it:
+
 
 ```python
-from hooking import on_enter, on_leave, wrap, override
+from hooking import override
+
+def myhook(context, *args, **kwargs):
+    context.result = context.target(*args, **kwargs)
+    # or
+    my_new_target = lambda *args, **kwargs: print("New Target Here !")
+    context.result = my_new_target(*args, **kwargs)
+
+
+
+# override target with myhook
+@override(hook3, foo=42, bar="Alex")  # foo and bar are config data
+def target():
+    pass
+```
+
+> Note that with the `hooking.override` decorator, the programmer must execute the target or its replacement inside the hook and set the result to `context.result`.
+
+## Wrap a target
+The `hooking.wrap` decorator allows the programmer to wrap the target between two hooks that will be executed upstream and downstream. Two additional decorators `hooking.on_enter` and `hooking.on_leave` allow the programmer to bind either a upstream or a downstream hook to a target.
+
+```python
+from hooking import wrap, on_enter, on_leave
 
 def hook1(context, *args, **kwargs):
     pass
@@ -328,34 +357,22 @@ def hook1(context, *args, **kwargs):
 def hook2(context, *args, **kwargs):
     pass
 
-def hook3(context, *args, **kwargs):
-    context.result = context.target(*args, **kwargs)
-    # or
-    context.result = my_new_target(*args, **kwargs)
-
-# bind an upstream hook to my_func1
-@on_enter(hook1, foo=42, bar="Alex")  # foo and bar are config data
+# bind an upstream hook and a downstream hook to my_func1
+@wrap(hook1, hook2, foo=42, bar="Alex")  # foo and bar are config data
 def my_func1():
     pass
 
-# bind a downstream hook to my_func2
+# bind an upstream hook to my_func2
+@on_enter(hook1, foo=42, bar="Alex")
+def my_func2():
+    pass
+
+# bind a downstream hook to my_func3
 @on_leave(hook2, foo=42, bar="Alex")
 def my_func2():
     pass
 
-# bind an upstream hook and a downstream hook to my_func3
-@wrap(hook1, hook2, foo=42, bar="Alex") 
-def my_func3():
-    pass
-
-# override my_func4 with hook3
-@override(hook3, foo=42, bar="Alex")
-def my_func4():
-    pass
 ```
-
-> Note that with the `hooking.override` decorator, the programmer must execute the target or its replacement inside the hook and set the result to `context.result`.
-
 
 # Loose coupling
 In this paradigm, hooks aren't directly bound to target but to tags which are linked to targets. The library exposes the `hooking.H` class to support the loose coupling paradigm. In short, the `hooking.H.tag` decorator is used to tag targets, then class methods `hooking.H.on_enter`, `hooking.H.on_leave`, and `hooking.H.wrap` are used to bind hooks to tags.
