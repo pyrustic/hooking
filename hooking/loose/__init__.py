@@ -1,10 +1,11 @@
 """Loose coupling module"""
+import operator
 from threading import Lock
 from functools import wraps
 from collections import OrderedDict
 from hooking.runner import Runner
 from hooking import dto
-from hooking.constant import ENTER, LEAVE
+from hooking.constant import ENTER, LEAVE, NORMAL
 from hooking.error import Error
 
 
@@ -64,7 +65,7 @@ class H:
         return deco
 
     @classmethod
-    def wrap(cls, tag, hook1, hook2):
+    def wrap(cls, tag, hook1, hook2, priority1=NORMAL, priority2=NORMAL):
         """
         Wrap a target with an upstream hook and a downstream hook
 
@@ -72,41 +73,45 @@ class H:
         - tag: the tag label
         - hook1: upstream hook
         - hook2: downstream hook
+        - priority1: integer from 1 to 5. Constants: HIGH, NORMAL, LOW
+        - priority2: integer from 1 to 5. Constants: HIGH, NORMAL, LOW
 
         [return]
         Returns respective hook identifiers
         """
-        hid1 = cls.on_enter(tag, hook1)
-        hid2 = cls.on_leave(tag, hook2)
+        hid1 = cls.on_enter(tag, hook1, priority=priority1)
+        hid2 = cls.on_leave(tag, hook2, priority=priority2)
         return hid1, hid2
 
     @classmethod
-    def on_enter(cls, tag, hook):
+    def on_enter(cls, tag, hook, priority=NORMAL):
         """
         Register an upstream hook
 
         [parameters]
         - tag: tag label
         - hook: upstream hook
+        - priority: integer from 1 to 5. Constants: HIGH, NORMAL, LOW
 
         [return]
         Returns the hook identifier
         """
-        return cls.bind(tag, hook, spec=ENTER)
+        return cls.bind(tag, hook, spec=ENTER, priority=priority)
 
     @classmethod
-    def on_leave(cls, tag, hook):
+    def on_leave(cls, tag, hook, priority=NORMAL):
         """
         Register an downstream hook
 
         [parameters]
         - tag: tag label
         - hook: downstream hook
+        - priority: integer from 1 to 5. Constants: HIGH, NORMAL, LOW
 
         [return]
         Returns the hook identifier
         """
-        return cls.bind(tag, hook, spec=LEAVE)
+        return cls.bind(tag, hook, spec=LEAVE, priority=priority)
 
     @classmethod
     def unbind(cls, *hids):
@@ -190,7 +195,7 @@ class H:
         return new_class
 
     @classmethod
-    def bind(cls, tag, hook, spec=ENTER):
+    def bind(cls, tag, hook, spec=ENTER, priority=NORMAL):
         """
         Bind a hook to a tag
 
@@ -208,10 +213,12 @@ class H:
         hid = gen_id(cls)
         with cls.lock:
             # update cls.hooks
-            hook_info = dto.HookInfo(cls, hid, hook, tag, spec)
+            hook_info = dto.HookInfo(cls, hid, hook, tag, spec, priority)
             if not cls.hooks.get(tag):
                 cls.hooks[tag] = list()
             cls.hooks[tag].append(hook_info)
+            sorted(cls.hooks[tag], key=operator.attrgetter("priority"),
+                   reverse=True)
         return hid
 
 

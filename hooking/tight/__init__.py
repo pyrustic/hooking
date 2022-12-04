@@ -4,6 +4,7 @@ from functools import wraps
 from hooking.runner import Runner
 from hooking.context import Context
 from hooking import dto
+from hooking.constant import NORMAL
 from hooking.error import ChainBreak
 
 
@@ -22,7 +23,7 @@ def override(hook, **config):
             context = Context(cls=None, tag=None, config=config, target=target,
                               args=args, kwargs=kwargs, shared=OrderedDict())
             try:
-                result = hook(context, *args, **kwargs)
+                hook(context, *args, **kwargs)
             except ChainBreak as e:
                 pass
             return context.result
@@ -45,9 +46,9 @@ def wrap(hook1, hook2, **config):
         @wraps(target)
         def wrapper(*args, **kwargs):
             hook_info1 = dto.HookInfo(cls=None, hid=None, hook=hook1,
-                                      tag=None, spec=None)
+                                      tag=None, spec=None, priority=NORMAL)
             hook_info2 = dto.HookInfo(cls=None, hid=None, hook=hook2,
-                                      tag=None, spec=None)
+                                      tag=None, spec=None, priority=NORMAL)
             upstream_hooks, downstream_hooks = (hook_info1, ), (hook_info2, )
             runner = Runner(config=config, target=target, args=args, kwargs=kwargs)
             return runner.run(upstream_hooks, downstream_hooks)
@@ -68,7 +69,7 @@ def on_enter(hook, **config):
         @wraps(target)
         def wrapper(*args, **kwargs):
             hook_info = dto.HookInfo(cls=None, hid=None, hook=hook,
-                                     tag=None, spec=None)
+                                     tag=None, spec=None, priority=NORMAL)
             upstream_hooks, downstream_hooks = (hook_info, ), tuple()
             runner = Runner(config=config, target=target, args=args, kwargs=kwargs)
             return runner.run(upstream_hooks, downstream_hooks)
@@ -89,7 +90,7 @@ def on_leave(hook, **config):
         @wraps(target)
         def wrapper(*args, **kwargs):
             hook_info = dto.HookInfo(cls=None, hid=None, hook=hook,
-                                     tag=None, spec=None)
+                                     tag=None, spec=None, priority=NORMAL)
             upstream_hooks, downstream_hooks = tuple(), (hook_info, )
             runner = Runner(config=config, target=target, args=args, kwargs=kwargs)
             return runner.run(upstream_hooks, downstream_hooks)
