@@ -10,4 +10,4 @@ Constants
 >
 > **Functions:** &nbsp; None
 >
-> **Constants:** &nbsp; ENTER &nbsp;&nbsp; LEAVE
+> **Constants:** &nbsp; ENTER &nbsp;&nbsp; HIGH &nbsp;&nbsp; LEAVE &nbsp;&nbsp; LOW &nbsp;&nbsp; NORMAL

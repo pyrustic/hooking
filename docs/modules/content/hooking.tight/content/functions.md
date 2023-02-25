@@ -10,7 +10,7 @@ Tight coupling paradigm
 >
 > **Functions:** &nbsp; [on\_enter](#on_enter) &nbsp;&nbsp; [on\_leave](#on_leave) &nbsp;&nbsp; [override](#override) &nbsp;&nbsp; [wrap](#wrap)
 >
-> **Constants:** &nbsp; None
+> **Constants:** &nbsp; NORMAL
 
 # All Functions
 [on\_enter](#on_enter) &nbsp;&nbsp; [on\_leave](#on_leave) &nbsp;&nbsp; [override](#override) &nbsp;&nbsp; [wrap](#wrap)

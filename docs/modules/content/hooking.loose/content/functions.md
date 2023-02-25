@@ -10,7 +10,7 @@ Loose coupling module
 >
 > **Functions:** &nbsp; [gen\_id](#gen_id) &nbsp;&nbsp; [init\_decoration](#init_decoration)
 >
-> **Constants:** &nbsp; ENTER &nbsp;&nbsp; LEAVE
+> **Constants:** &nbsp; ENTER &nbsp;&nbsp; LEAVE &nbsp;&nbsp; NORMAL
 
 # All Functions
 [gen\_id](#gen_id) &nbsp;&nbsp; [init\_decoration](#init_decoration)

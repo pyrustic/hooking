@@ -13,13 +13,13 @@ No description
 > **Constants:** &nbsp; ENTER &nbsp;&nbsp; LEAVE
 
 # Class HookInfo
-HookInfo(cls, hid, hook, tag, spec)
+HookInfo(cls, hid, hook, tag, spec, priority)
 
 ## Base Classes
 tuple
 
 ## Class Attributes
-\_field\_defaults &nbsp;&nbsp; \_fields &nbsp;&nbsp; \_fields\_defaults &nbsp;&nbsp; \_make &nbsp;&nbsp; cls &nbsp;&nbsp; hid &nbsp;&nbsp; hook &nbsp;&nbsp; spec &nbsp;&nbsp; tag
+\_field\_defaults &nbsp;&nbsp; \_fields &nbsp;&nbsp; \_fields\_defaults &nbsp;&nbsp; \_make &nbsp;&nbsp; cls &nbsp;&nbsp; hid &nbsp;&nbsp; hook &nbsp;&nbsp; priority &nbsp;&nbsp; spec &nbsp;&nbsp; tag
 
 ## Class Properties
 
